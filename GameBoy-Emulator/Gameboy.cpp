@@ -4,8 +4,6 @@
 std::map<uint16_t, Gameboy::mmio_read *> Gameboy::read_mmio;
 std::map<uint16_t, Gameboy::mmio_write *> Gameboy::write_mmio;
 
-std::map<uint8_t, std::function<uint8_t (Gameboy *)>> Gameboy::instructions;
-
 Gameboy::Gameboy (uint8_t *cart, size_t cart_size) { 
 	this->memory = new uint8_t[0xFFFF + 1];
 

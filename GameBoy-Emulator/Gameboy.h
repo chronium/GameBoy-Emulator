@@ -84,8 +84,6 @@ public:
 
 	registers_t regs;
 	cart_header_t *header;
-
-	static std::map<uint8_t, std::function<uint8_t(Gameboy *)>> instructions;
 private:
 	Gameboy () = delete;
 

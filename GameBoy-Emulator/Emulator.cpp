@@ -1,22 +1,23 @@
 #include "stdafx.h"
 #include "Emulator.h"
 
+std::map<uint8_t, Emulator::instruction> Emulator::instructions;
 
 Emulator::Emulator (Gameboy *gameboy) :
 	gameboy(gameboy) {
-	gameboy->instructions[0x00] = &NOP; // NOP
+	this->instructions[0x00] = &Emulator::NOP; // NOP
 }
 
-uint8_t NOP (Gameboy *gb) {
-	printf ("%04x:NOP\n", gb->regs.PC);
-	gb->regs.PC++;
+uint8_t Emulator::NOP () {
+	printf ("%04x:NOP\n", this->gameboy->regs.PC);
+	this->gameboy->regs.PC++;
 	return 4;
 }
 
 Emulator::~Emulator () { }
 
-#define has_instruction(instruction) gameboy->instructions.count (instruction) > 0
-#define exec_instruction(instruction) gameboy->instructions.at (instruction) (gameboy)
+#define has_instruction(instruction) this->instructions.count (instruction) > 0
+#define exec_instruction(instruction) (this->*instructions.at (instruction)) ()
 
 uint8_t Emulator::Tick () {
 	uint8_t opcode = gameboy->read_u8 ();

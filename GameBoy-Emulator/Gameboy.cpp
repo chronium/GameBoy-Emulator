@@ -1,8 +1,8 @@
 #include "stdafx.h"
 #include "Gameboy.h"
 
-std::map<uint16_t, Gameboy::mmio_read *> Gameboy::read_mmio;
-std::map<uint16_t, Gameboy::mmio_write *> Gameboy::write_mmio;
+std::map<uint16_t, Gameboy::mmio_read> Gameboy::read_mmio;
+std::map<uint16_t, Gameboy::mmio_write> Gameboy::write_mmio;
 
 Gameboy::Gameboy (uint8_t *cart, size_t cart_size) { 
 	this->memory = new uint8_t[0xFFFF + 1];
@@ -53,17 +53,42 @@ Gameboy::Gameboy (uint8_t *cart, size_t cart_size) {
 	this->write_u8(0xFF4A, 0x00);
 	this->write_u8(0xFF4B, 0x00);
 	this->write_u8(0xFFFF, 0x00);
+	
+	init_mmio ();
 }
 
 Gameboy::~Gameboy () { 
 	delete[] memory;
 }
 
+void Gameboy::init_mmio () {
+	this->write_mmio[0xFF0F] = &Gameboy::interrupt_flag;
+	this->write_mmio[0xFF40] = &Gameboy::LCDC;
+
+	this->read_mmio[0xFF44] = &Gameboy::LCDC_Y;
+}
+
+void Gameboy::interrupt_flag (uint8_t val) {
+	if (val & 1) {
+		this->interrupt[1] = 1;
+	}
+}
+
+void Gameboy::LCDC (uint8_t val) {
+	if (val & 0x80) {
+		screen->FillScreen (0xFFFFFFFF);
+	}
+}
+
+uint8_t Gameboy::LCDC_Y () {
+	return 0;
+}
+
 #define mmio_read_contains(addr) this->read_mmio.count (addr) > 0
 #define mmio_write_contains(addr) this->write_mmio.count (addr) > 0
 
-#define mmio_read(addr) (*this->read_mmio.at (addr)) (addr)
-#define mmio_write(addr, val) (*this->write_mmio.at (addr)) (addr, val)
+#define mmio_read(addr) (this->*read_mmio.at (addr)) ()
+#define mmio_write(addr, val) (this->*write_mmio.at (addr)) (val)
 
 int8_t Gameboy::read_s8 () {
 	uint16_t addr = this->regs.PC++;

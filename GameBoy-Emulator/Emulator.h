@@ -29,7 +29,11 @@ public:
 
 	uint8_t LDH_a8_A ();
 
+	uint8_t LDH_A_a8 ();
+
 	uint8_t DI ();
+
+	uint8_t CP_d8 ();
 
 	typedef uint8_t (Emulator::*instruction) ();
 	static std::map<uint8_t, instruction> instructions;

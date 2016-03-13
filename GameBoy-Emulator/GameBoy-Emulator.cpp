@@ -36,7 +36,8 @@ int main(int argc, char *args[]) {
 	Window *window = new Window (string_format("Gameboy Emulator - Cart: %s", gameboy->header->title), WIDTH * SCALE, HEIGHT * SCALE);
 	window->SetLogicalSize (WIDTH, HEIGHT, true);
 
-	DynamicTexture *screen = new DynamicTexture (window->GetRenderer (), WIDTH, HEIGHT);
+	Screen *screen = new Screen (window->GetRenderer (), WIDTH, HEIGHT);
+	gameboy->SetScreen (screen);
 
 	Emulator *emulator = new Emulator (gameboy);
 
@@ -44,7 +45,7 @@ int main(int argc, char *args[]) {
 	int ticks = 0;
 
 	auto updateFunc = [&] () {
-		screen->Update ();
+		screen->GetTexture()->Update ();
 
 		if (!halted) {
 			auto tick = emulator->Tick ();
@@ -54,7 +55,7 @@ int main(int argc, char *args[]) {
 	};
 
 	auto renderfunc = [&] (SDL_Renderer *renderer) {
-		screen->Draw (renderer);
+		screen->GetTexture ()->Draw (renderer);
 	};
 
 	window->EnterLoop (updateFunc, renderfunc);

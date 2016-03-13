@@ -9,6 +9,9 @@ public:
 
 	void Update ();
 	void Draw (SDL_Renderer *renderer);
+
+	inline uint32_t *GetPixels () { return this->pixels; }
+	inline uint32_t GetSize () { return this->width * this->height; }
 private:
 	DynamicTexture () = delete;
 

@@ -6,6 +6,8 @@
 #include <bitset>
 #include <functional>
 
+#include "Screen.h"
+
 class Gameboy {
 #define ROM_SIZE(N) (32000 << N)
 #define CHECK_HEADER(mem, header) header_checksum ((uint8_t *) mem) == header->header_checksum
@@ -71,6 +73,8 @@ public:
 	Gameboy (uint8_t *cart, size_t cart_size);
 	~Gameboy ();
 
+	inline void SetScreen (Screen *screen) { this->screen = screen; }
+
 	int8_t read_s8 ();
 	uint8_t read_u8 ();
 	int16_t read_s16 ();
@@ -86,8 +90,15 @@ public:
 	void write_s16 (uint16_t addr, int16_t val);
 	void write_u16 (uint16_t addr, uint16_t val);
 
-	typedef uint8_t (*mmio_read) (uint16_t addr);
-	typedef void (*mmio_write) (uint16_t addr, uint8_t val);
+	typedef uint8_t (Gameboy::*mmio_read) ();
+	typedef void (Gameboy::*mmio_write) (uint8_t val);
+
+	void interrupt_flag (uint8_t val);
+	void LCDC (uint8_t val);
+	
+	uint8_t LCDC_Y ();
+
+	void init_mmio ();
 
 	registers_t regs;
 	cart_header_t *header;
@@ -98,7 +109,11 @@ private:
 
 	uint8_t *memory;
 
-	static std::map<uint16_t, mmio_read *> read_mmio;
-	static std::map<uint16_t, mmio_write *> write_mmio;
+	static std::map<uint16_t, mmio_read> read_mmio;
+	static std::map<uint16_t, mmio_write> write_mmio;
+
+	std::bitset<8> interrupt;
+
+	Screen *screen;
 };
 

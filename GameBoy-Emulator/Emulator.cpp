@@ -33,7 +33,9 @@ Emulator::Emulator (Gameboy *gameboy) :
 	this->instructions[0xc3] = &Emulator::JP_d16;
 	this->instructions[0xaf] = &Emulator::XOR_A_A;
 	this->instructions[0xe0] = &Emulator::LDH_a8_A;
+	this->instructions[0xf0] = &Emulator::LDH_A_a8;
 	this->instructions[0xf3] = &Emulator::DI;
+	this->instructions[0xfe] = &Emulator::CP_d8;
 }
 
 Emulator::~Emulator () { }
@@ -142,10 +144,34 @@ uint8_t Emulator::DI () {
 
 uint8_t Emulator::LDH_a8_A () {
 	uint8_t a8 = gameboy->read_u8 ();
-	uint8_t addr = (uint16_t) (0xFF00 + a8);
-	printf ("LDH %x, A(%x)\n", addr, gameboy->regs.AF.regs.A);
+	uint16_t addr = (uint16_t) (0xFF00 + a8);
+	printf ("LDH (%x), A(%x)\n", addr, gameboy->regs.AF.regs.A);
 	gameboy->write_u8 (addr, gameboy->regs.AF.regs.A);
 	return 12;
+}
+
+uint8_t Emulator::LDH_A_a8 () {
+	uint8_t a8 = gameboy->read_u8 ();
+	uint16_t addr = (uint16_t) (0xFF00 + a8);
+	printf ("LDH A, (%x)\n", addr);
+	gameboy->regs.AF.regs.A = gameboy->read_u8 (addr);
+	return 12;
+}
+
+uint8_t Emulator::CP_d8 () {
+	uint8_t d8 = gameboy->read_u8 ();
+	auto a = gameboy->regs.AF.regs.A;
+
+	printf ("CP A(%x), %x\n", a, d8);
+
+	gameboy->regs.AF.regs.F[6] = 1;
+	if (a - d8 == 0)
+		gameboy->regs.AF.regs.F[7] = 1;
+	if (a - d8 > 127)
+		gameboy->regs.AF.regs.F[5] = 1;
+	if (a < d8)
+		gameboy->regs.AF.regs.F[4] = 1;
+	return 8;
 }
 
 #define has_instruction(instruction) this->instructions.count (instruction) > 0

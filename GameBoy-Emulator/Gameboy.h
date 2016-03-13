@@ -1,8 +1,10 @@
 #pragma once
 #include <stdint.h>
 #include <stddef.h>
+
 #include <map>
 #include <bitset>
+#include <functional>
 
 class Gameboy {
 #define ROM_SIZE(N) (32000 << N)
@@ -80,12 +82,10 @@ public:
 	typedef uint8_t (*mmio_read) (uint16_t addr);
 	typedef void (*mmio_write) (uint16_t addr, uint8_t val);
 
-	typedef uint8_t (*instruction) (Gameboy *gb);
-
 	registers_t regs;
 	cart_header_t *header;
 
-	static std::map<uint8_t, instruction *> instructions;
+	static std::map<uint8_t, std::function<uint8_t(Gameboy *)>> instructions;
 private:
 	Gameboy () = delete;
 

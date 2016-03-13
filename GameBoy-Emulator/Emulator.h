@@ -8,13 +8,28 @@ public:
 
 	uint8_t Tick ();
 
-	uint8_t NOP (); // 0x00
+	uint8_t NOP ();
+
+	uint8_t DEC_B ();
+	uint8_t LD_B_d8 ();
 	
-	uint8_t LD_hl_nn (); // 0x21
+	uint8_t DEC_C ();
+	uint8_t LD_C_d8 ();
 
-	uint8_t JP_nn (); // 0xc3
+	uint8_t JR_NZ_r8 ();
+	uint8_t LD_HLm_d16 ();
 
-	uint8_t XOR_a_a (); // 0xaf
+	uint8_t LD_iHL_A ();
+
+	uint8_t LD_A_d8 ();
+
+	uint8_t JP_d16 ();
+
+	uint8_t XOR_A_A ();
+
+	uint8_t LDH_a8_A ();
+
+	uint8_t DI ();
 
 	typedef uint8_t (Emulator::*instruction) ();
 	static std::map<uint8_t, instruction> instructions;

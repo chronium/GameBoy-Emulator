@@ -76,6 +76,11 @@ public:
 	int16_t read_s16 ();
 	uint16_t read_u16 ();
 
+	int8_t read_s8 (uint16_t addr);
+	uint8_t read_u8 (uint16_t addr);
+	int16_t read_s16 (uint16_t addr);
+	uint16_t read_u16 (uint16_t addr);
+
 	void write_s8 (uint16_t addr, int8_t val);
 	void write_u8 (uint16_t addr, uint8_t val);
 	void write_s16 (uint16_t addr, int16_t val);
@@ -86,6 +91,8 @@ public:
 
 	registers_t regs;
 	cart_header_t *header;
+
+	bool disable_interrupts = false;
 private:
 	Gameboy () = delete;
 

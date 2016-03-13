@@ -5,8 +5,8 @@ std::map<uint8_t, Emulator::instruction> Emulator::instructions;
 
 Emulator::Emulator (Gameboy *gameboy) :
 	gameboy(gameboy) {
-	this->instructions[0x00] = &Emulator::NOP;		// NOP
-	this->instructions[0xc3] = &Emulator::JP_nn;	// JP nn
+	this->instructions[0x00] = &Emulator::NOP;      // NOP
+	this->instructions[0xc3] = &Emulator::JP_nn;    // JP nn
 }
 
 uint8_t Emulator::NOP () {

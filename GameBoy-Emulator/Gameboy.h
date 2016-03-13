@@ -39,9 +39,11 @@ class Gameboy {
 
 	typedef union reg {
 		uint16_t r;
-		uint8_t hi;
-		uint8_t lo;
-
+		struct regs { 
+			uint8_t hi;
+			uint8_t lo;
+		} regs;
+		
 		reg () { r = 0; }
 	} reg_t;
 

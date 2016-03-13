@@ -65,37 +65,39 @@ Gameboy::~Gameboy () {
 #define mmio_read(addr) (*this->read_mmio.at (addr)) (addr)
 #define mmio_write(addr, val) (*this->write_mmio.at (addr)) (addr, val)
 
-int8_t Gameboy::read_s8 (uint16_t offset) {
-	uint16_t addr = this->regs.PC + offset;
+int8_t Gameboy::read_s8 () {
+	uint16_t addr = ++this->regs.PC;
 
 	if (mmio_read_contains (addr))
 		return (int8_t) mmio_read (addr);
 
 	return (int8_t) this->memory[addr];
 }
-uint8_t Gameboy::read_u8 (uint16_t offset) {
-	uint16_t addr = this->regs.PC + offset;
+uint8_t Gameboy::read_u8 () {
+	uint16_t addr = this->regs.PC++;
 
 	if (mmio_read_contains (addr))
 		return (uint8_t) mmio_read (addr);
 
 	return (uint8_t) this->memory[addr];
 }
-int16_t Gameboy::read_s16 (uint16_t offset) {
-	uint16_t addr = this->regs.PC + offset;
+int16_t Gameboy::read_s16 () {
+	uint16_t addr = this->regs.PC;
+	this->regs.PC += 2;
 
 	if (mmio_read_contains (addr) && mmio_read_contains (addr + 1))
 		return (int16_t) (mmio_read (addr) | mmio_read (addr + 1));
 
-	return (int16_t) (this->memory[addr] | (this->memory[addr + 1]));
+	return (int16_t) (this->memory[addr] | (this->memory[addr + 1] << 8));
 }
-uint16_t Gameboy::read_u16 (uint16_t offset) {
-	uint16_t addr = this->regs.PC + offset;
+uint16_t Gameboy::read_u16 () {
+	uint16_t addr = this->regs.PC;
+	this->regs.PC += 2;
 
 	if (mmio_read_contains (addr) && mmio_read_contains (addr + 1))
 		return (uint16_t) (mmio_read (addr) | (mmio_read (addr)));
 
-	return (uint16_t) (this->memory[addr] | (this->memory[addr + 1]));
+	return (uint16_t) (this->memory[addr] | (this->memory[addr + 1] << 8));
 }
 
 void Gameboy::write_s8 (uint16_t addr, int8_t val) {

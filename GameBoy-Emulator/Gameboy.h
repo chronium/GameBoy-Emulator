@@ -69,10 +69,10 @@ public:
 	Gameboy (uint8_t *cart, size_t cart_size);
 	~Gameboy ();
 
-	int8_t read_s8 (uint16_t offset = 0);
-	uint8_t read_u8 (uint16_t offset = 0);
-	int16_t read_s16 (uint16_t offset = 0);
-	uint16_t read_u16 (uint16_t offset = 0);
+	int8_t read_s8 ();
+	uint8_t read_u8 ();
+	int16_t read_s16 ();
+	uint16_t read_u16 ();
 
 	void write_s8 (uint16_t addr, int8_t val);
 	void write_u8 (uint16_t addr, uint8_t val);

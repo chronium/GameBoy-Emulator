@@ -12,11 +12,12 @@ Emulator::~Emulator () { }
 #define exec_instruction(instruction) (*gameboy->instructions.at (instruction)) (gameboy)
 
 uint8_t Emulator::Tick () {
-	uint8_t opcode = gameboy->read_u8 (gameboy->regs.PC);
+	uint8_t opcode = gameboy->read_u8 ();
 
 	if (has_instruction (opcode))
 		return exec_instruction (opcode);
-	else
-		printf ("Unknown opcode %x, halting", opcode);
-	return -1;
+
+	printf ("Unknown opcode %x, halting", opcode);
+
+	return 0xFF;
 }

@@ -38,12 +38,22 @@ int main(int argc, char *args[]) {
 
 	DynamicTexture *screen = new DynamicTexture (window->GetRenderer (), WIDTH, HEIGHT);
 
-	bool ticking = true;
+	Emulator *emulator = new Emulator (gameboy);
 
-	auto updateFunc = [=] () {
+	bool halted = false;
+	int ticks = 0;
+
+	auto updateFunc = [&] () {
 		screen->Update ();
+
+		if (!halted) {
+			auto tick = emulator->Tick ();
+			halted = tick == 0xFF;
+			ticks += tick;
+		}
 	};
-	auto renderfunc = [=] (SDL_Renderer *renderer) {
+
+	auto renderfunc = [&] (SDL_Renderer *renderer) {
 		screen->Draw (renderer);
 	};
 

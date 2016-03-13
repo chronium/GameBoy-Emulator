@@ -4,11 +4,17 @@
 std::map<uint16_t, Gameboy::mmio_read *> Gameboy::read_mmio;
 std::map<uint16_t, Gameboy::mmio_write *> Gameboy::write_mmio;
 
+std::map<uint8_t, Gameboy::instruction *> Gameboy::instructions;
+
 Gameboy::Gameboy (uint8_t *cart, size_t cart_size) { 
+	this->memory = new uint8_t[0xFFFF + 1];
+
 	for (int i = 0; i < 0xFFFF; i++)
 		this->write_u8 (i, rand ());
 
 	memcpy (this->memory, cart, cart_size > 0x3FFF ? 0x3FFF : cart_size);
+
+	header = (cart_header_t *) &this->memory[0x100];
 
 	this->regs.AF.r = 0x01B0;
 	this->regs.BC.r = 0x0013;
@@ -51,7 +57,9 @@ Gameboy::Gameboy (uint8_t *cart, size_t cart_size) {
 	this->write_u8(0xFFFF, 0x00);
 }
 
-Gameboy::~Gameboy () { }
+Gameboy::~Gameboy () { 
+	delete[] memory;
+}
 
 #define mmio_read_contains(addr) this->read_mmio.count (addr) > 0
 #define mmio_write_contains(addr) this->write_mmio.count (addr) > 0

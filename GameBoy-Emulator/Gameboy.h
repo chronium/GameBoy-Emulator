@@ -79,11 +79,17 @@ public:
 
 	typedef uint8_t (*mmio_read) (uint16_t addr);
 	typedef void (*mmio_write) (uint16_t addr, uint8_t val);
+
+	typedef uint8_t (*instruction) (Gameboy *gb);
+
+	registers_t regs;
+	cart_header_t *header;
+
+	static std::map<uint8_t, instruction *> instructions;
 private:
 	Gameboy () = delete;
 
-	uint8_t memory[0xFFFF+1];
-	registers_t regs;
+	uint8_t *memory;
 
 	static std::map<uint16_t, mmio_read *> read_mmio;
 	static std::map<uint16_t, mmio_write *> write_mmio;

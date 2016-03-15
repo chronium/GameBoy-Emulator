@@ -1,14 +1,13 @@
 #include "stdafx.h"
 #include "Window.h"
 
-
 Window::Window (const std::string &title, int width, int height) : 
 	width (width),
 	height (height),
 	title (title) {
 	SDL_Init (SDL_INIT_EVERYTHING);
 
-	this->window = SDL_CreateWindow (title.c_str (), SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, this->width, this->height, NULL);
+  this->window = SDL_CreateWindow (title.c_str (), SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, this->width, this->height, 0);
 	this->renderer = SDL_CreateRenderer (this->window, -1, 0);
 }
 

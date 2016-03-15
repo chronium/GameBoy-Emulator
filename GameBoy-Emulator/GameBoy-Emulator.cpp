@@ -1,5 +1,6 @@
-#include "stdafx.h"
+#define SDL_MAIN_HANDLED
 
+#include "stdafx.h"
 #include "Gameboy.h"
 #include "Window.h"
 #include "DynamicTexture.h"
@@ -11,7 +12,6 @@
 #include <iostream>
 #include <cstdio>
 #include <string>
-
 #include <SDL.h>
 
 #define WIDTH  160

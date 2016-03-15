@@ -55,8 +55,8 @@ class Gameboy {
 			struct regs {
 				uint8_t A;
 				std::bitset<8> F;
-
-				struct regs () { A = 0; }
+      public:
+        regs () { A = 0; }
 			} regs;
 
 			AF () { r = 0; }
@@ -66,9 +66,9 @@ class Gameboy {
 		reg_t HL;
 		uint16_t SP;
 		uint16_t PC;
-
-		struct registers () { }
-	} registers_t;
+  public:
+    registers () { }
+  } registers_t;
 public:
 	Gameboy (uint8_t *cart, size_t cart_size);
 	~Gameboy ();

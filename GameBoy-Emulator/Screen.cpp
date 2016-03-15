@@ -13,6 +13,6 @@ Screen::Screen (SDL_Renderer *renderer, int width, int height) :
 Screen::~Screen () { }
 
 void Screen::FillScreen (uint32_t color) {
-	for (int i = 0; i < this->texture->GetSize (); i++)
+  for (uint32_t i = 0; i < this->texture->GetSize (); i++)
 		this->texture->GetPixels ()[i] = color;
 }

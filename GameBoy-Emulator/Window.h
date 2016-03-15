@@ -1,7 +1,6 @@
 #pragma once
 #include <string>
 #include <functional>
-
 #include <SDL.h>
 
 class Window {

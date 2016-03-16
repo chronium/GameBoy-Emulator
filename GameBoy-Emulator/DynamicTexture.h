@@ -1,5 +1,6 @@
 #pragma once
 #include <stdint.h>
+#include <cstring>
 #include <SDL.h>
 
 class DynamicTexture {

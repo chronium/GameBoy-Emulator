@@ -1,6 +1,10 @@
 #define SDL_MAIN_HANDLED
 
 #include "stdafx.h"
+
+#include <cstdio>
+#include <cstring>
+
 #include "Gameboy.h"
 #include "Window.h"
 #include "DynamicTexture.h"
@@ -10,7 +14,6 @@
 #include <vector>
 #include <memory>
 #include <iostream>
-#include <cstdio>
 #include <string>
 #include <SDL.h>
 

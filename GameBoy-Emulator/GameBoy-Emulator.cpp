@@ -30,11 +30,14 @@ std::string string_format (const std::string& format, Args ... args) {
 }
 
 int main(int argc, char *args[]) {
-	std::ifstream input (args[1], std::ios::binary);
-	std::vector<char> cart_data ((std::istreambuf_iterator<char> (input)),
+	std::ifstream cart (args[2], std::ios::binary);
+	std::vector<char> cart_data ((std::istreambuf_iterator<char> (cart)),
 								 (std::istreambuf_iterator<char> ()));
+	std::ifstream bios (args[1], std::ios::binary);
+	std::vector<char> bios_data ((std::istreambuf_iterator<char> (bios)),
+		(std::istreambuf_iterator<char> ()));
 
-	Gameboy *gameboy = new Gameboy ((uint8_t *) cart_data.data (), cart_data.size ());
+	Gameboy *gameboy = new Gameboy ((uint8_t *) bios_data.data (), (uint8_t *) cart_data.data (), cart_data.size ());
 
 	Window *window = new Window (string_format("Gameboy Emulator - Cart: %s", gameboy->header->title), WIDTH * SCALE, HEIGHT * SCALE);
 	window->SetLogicalSize (WIDTH, HEIGHT, true);
@@ -51,6 +54,8 @@ int main(int argc, char *args[]) {
 		screen->GetTexture()->Update ();
 
 		if (!halted) {
+			if (gameboy->regs.PC == 0x100)
+				gameboy->release_bios ();
 			auto tick = emulator->Tick ();
 			halted = tick == 0xFF;
 			ticks += tick;

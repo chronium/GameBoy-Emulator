@@ -16,3 +16,7 @@ void Screen::FillScreen (uint32_t color) {
   for (uint32_t i = 0; i < this->texture->GetSize (); i++)
 		this->texture->GetPixels ()[i] = color;
 }
+
+void Screen::PlotPixel (size_t x, size_t y, uint32_t color) {
+	this->texture->GetPixels ()[x + y * this->width] = color;
+}

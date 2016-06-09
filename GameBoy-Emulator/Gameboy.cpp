@@ -4,61 +4,32 @@
 std::map<uint16_t, Gameboy::mmio_read> Gameboy::read_mmio;
 std::map<uint16_t, Gameboy::mmio_write> Gameboy::write_mmio;
 
-Gameboy::Gameboy (uint8_t *cart, size_t cart_size) { 
+Gameboy::Gameboy (uint8_t *bios, uint8_t *cart, size_t cart_size) { 
 	this->memory = new uint8_t[0xFFFF + 1];
 
 	for (int i = 0; i < 0xFFFF; i++)
 		this->write_u8 (i, rand ());
 
 	memcpy (this->memory, cart, cart_size > 0x3FFF ? 0x3FFF : cart_size);
+	memcpy (this->cart_begin, cart, 0xFF);
+	memcpy (this->memory, bios, 0xFF);
 
 	header = (cart_header_t *) &this->memory[0x100];
-
-	this->regs.AF.r = 0x01B0;
-	this->regs.BC.r = 0x0013;
-	this->regs.DE.r = 0x00D8;
-	this->regs.HL.r = 0x014D;
-	
-	this->regs.SP = 0xFFFE;
-	this->regs.PC = 0x0100;
-
-	this->write_u8(0xFF05, 0x00);
-	this->write_u8(0xFF06, 0x00);
-	this->write_u8(0xFF07, 0x00);
-	this->write_u8(0xFF10, 0x80);
-	this->write_u8(0xFF11, 0xBF);
-	this->write_u8(0xFF12, 0xF3);
-	this->write_u8(0xFF14, 0xBF);
-	this->write_u8(0xFF16, 0x3F);
-	this->write_u8(0xFF17, 0x00);
-	this->write_u8(0xFF19, 0xBF);
-	this->write_u8(0xFF1A, 0x7F);
-	this->write_u8(0xFF1B, 0xFF);
-	this->write_u8(0xFF1C, 0x9F);
-	this->write_u8(0xFF1E, 0xBF);
-	this->write_u8(0xFF20, 0xFF);
-	this->write_u8(0xFF21, 0x00);
-	this->write_u8(0xFF22, 0x00);
-	this->write_u8(0xFF23, 0xBF);
-	this->write_u8(0xFF24, 0x77);
-	this->write_u8(0xFF25, 0xF3);
-	this->write_u8(0xFF26, 0xF1);
-	this->write_u8(0xFF40, 0x91);
-	this->write_u8(0xFF42, 0x00);
-	this->write_u8(0xFF43, 0x00);
-	this->write_u8(0xFF45, 0x00);
-	this->write_u8(0xFF47, 0xFC);
-	this->write_u8(0xFF48, 0xFF);
-	this->write_u8(0xFF49, 0xFF);
-	this->write_u8(0xFF4A, 0x00);
-	this->write_u8(0xFF4B, 0x00);
-	this->write_u8(0xFFFF, 0x00);
 	
 	init_mmio ();
 }
 
 Gameboy::~Gameboy () { 
 	delete[] memory;
+}
+
+void Gameboy::release_bios () {
+	static bool released = false;
+	if (!released) {
+		memcpy (this->memory, this->cart_begin, 0xFF);
+
+		released = true;
+	}
 }
 
 void Gameboy::init_mmio () {
@@ -82,6 +53,26 @@ void Gameboy::LCDC (uint8_t val) {
 
 uint8_t Gameboy::LCDC_Y () {
 	return 0;
+}
+
+void Gameboy::push_u8 (uint8_t val) {
+	this->regs.SP--;
+	this->write_u8 (this->regs.SP, val);
+}
+void Gameboy::push_u16 (uint16_t val) {
+	this->push_u8 ((val >> 8) & 0xFF);
+	this->push_u8 ((val >> 0) & 0xFF);
+}
+
+uint8_t Gameboy::pop_u8 () {
+	auto val = this->read_u8 (this->regs.SP);
+	this->regs.SP++;
+	return val;
+}
+uint16_t Gameboy::pop_u16 () {
+	auto l = this->pop_u8 ();
+	auto h = this->pop_u8 ();
+	return (h << 8) | l;
 }
 
 #define mmio_read_contains(addr) this->read_mmio.count (addr) > 0

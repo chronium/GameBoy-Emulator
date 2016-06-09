@@ -70,10 +70,12 @@ class Gameboy {
     registers () { }
   } registers_t;
 public:
-	Gameboy (uint8_t *cart, size_t cart_size);
+	Gameboy (uint8_t *bios, uint8_t *cart, size_t cart_size);
 	~Gameboy ();
 
 	inline void SetScreen (Screen *screen) { this->screen = screen; }
+
+	void release_bios ();
 
 	int8_t read_s8 ();
 	uint8_t read_u8 ();
@@ -84,6 +86,12 @@ public:
 	uint8_t read_u8 (uint16_t addr);
 	int16_t read_s16 (uint16_t addr);
 	uint16_t read_u16 (uint16_t addr);
+
+	void push_u8 (uint8_t val);
+	void push_u16 (uint16_t val);
+
+	uint8_t pop_u8 ();
+	uint16_t pop_u16 ();
 
 	void write_s8 (uint16_t addr, int8_t val);
 	void write_u8 (uint16_t addr, uint8_t val);
@@ -102,6 +110,8 @@ public:
 
 	registers_t regs;
 	cart_header_t *header;
+
+	uint8_t cart_begin[0xFF];
 
 	bool disable_interrupts = false;
 private:
